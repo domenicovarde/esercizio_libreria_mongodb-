@@ -1,0 +1,167 @@
+ 1. Struttura del progetto
+
+biblioteca-mongo/
+├── data/
+│   ├── autori.json
+│   ├── libri.json
+│   └── utenti.json
+├── scripts/
+│   └── loadData.js
+├── database/
+│   └── setupIndexes.js
+├── .env
+├── database.md
+├── package.json
+└── README.md
+ 2. Setup ambiente Node.js + MongoDB
+Requisiti:
+Node.js
+
+MongoDB in locale o Atlas
+
+npm install
+
+Installazione:
+
+mkdir biblioteca-mongo && cd biblioteca-mongo
+npm init -y
+npm install mongodb dotenv
+ 3. File .env (connessione DB)
+
+MONGO_URI=mongodb://localhost:27017
+DB_NAME=biblioteca
+
+4. Script scripts/loadData.js
+
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
+const fs = require('fs');
+
+const uri = process.env.MONGO_URI;
+const dbName = process.env.DB_NAME;
+
+const collections = ['autori', 'libri', 'utenti'];
+
+async function loadData() {
+  const client = new MongoClient(uri);
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+
+    for (const col of collections) {
+      const data = JSON.parse(fs.readFileSync(`./data/${col}.json`, 'utf8'));
+      const result = await db.collection(col).insertMany(data);
+      console.log(`${result.insertedCount} documenti inseriti in ${col}`);
+    }
+  } catch (err) {
+    console.error('Errore:', err);
+  } finally {
+    await client.close();
+  }
+}
+
+loadData();
+5. Script database/setupIndexes.js
+
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
+
+const uri = process.env.MONGO_URI;
+const dbName = process.env.DB_NAME;
+
+async function setupIndexes() {
+  const client = new MongoClient(uri);
+  await client.connect();
+  const db = client.db(dbName);
+
+  await db.collection('utenti').createIndex({ email: 1 }, { unique: true });
+  await db.collection('utenti').createIndex({ telefono: 1 }, { unique: true });
+  await db.collection('utenti').createIndex({ data_registrazione: 1 });
+  await db.collection('utenti').createIndex({ 'libri_prestati.libro_id': 1 });
+  await db.collection('utenti').createIndex({ 'libri_prestati.data_prestito': -1 });
+
+  console.log('Indici creati con successo');
+  await client.close();
+}
+
+setupIndexes();
+ 6. Esempi di JSON (/data/*.json)
+
+[
+  {
+    "nome_autore": "Italo Calvino",
+    "data_nascita": "1923-10-15",
+    "nazionalita": "Italiana"
+  }
+]
+libri.json
+
+[
+  {
+    "titolo": "Il barone rampante",
+    "anno_uscita": 1957,
+    "genere": "Romanzo",
+    "id_autore": [],
+    "utenti_che_hanno_preso_in_prestito": []
+  }
+]
+utenti.json
+json
+Copia
+Modifica
+[
+  {
+    "email": "mario.rossi@example.com",
+    "telefono": "+39 3456789012",
+    "data_registrazione": "2024-09-01T10:30:00Z",
+    "libri_prestati": []
+  }
+]
+ 7. File database.md
+
+# 📚 Struttura Base Dati Biblioteca (MongoDB)
+
+## 🔹 Collezione: autori
+
+```
+{
+  "_id": ObjectId,
+  "nome_autore": "Italo Calvino",
+  "data_nascita": "1923-10-15",
+  "nazionalita": "Italiana"
+}
+🔹 Collezione: libri
+
+{
+  "_id": ObjectId,
+  "id_autore": [ObjectId],
+  "titolo": "Il barone rampante",
+  "anno_uscita": 1957,
+  "genere": "Romanzo",
+  "utenti_che_hanno_preso_in_prestito": [
+    {
+      "utente_id": ObjectId,
+      "data_prestito": ISODate,
+      "data_restituzione": ISODate
+    }
+  ]
+}
+🔹 Collezione: utenti
+
+{
+  "_id": ObjectId,
+  "email": "mario.rossi@example.com",
+  "telefono": "+39 3456789012",
+  "data_registrazione": ISODate,
+  "libri_prestati": [
+    {
+      "libro_id": ObjectId,
+      "data_prestito": ISODate,
+      "data_restituzione": ISODate
+    }
+  ]
+}
+🔁 Relazioni
+Autori <-> Libri (molti a molti)
+
+Utenti <-> Libri (molti a molti)
