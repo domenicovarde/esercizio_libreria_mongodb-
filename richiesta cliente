@@ -1,0 +1,12 @@
+### ==richiesta cliente :==
+
+Bisogna definire un db NoSQL per una libreria. Le collezioni saranno: - Autori - Libri - Utenti Le relazioni: - autori <-> libri (molti a molti) - libri <-> utenti (molti a molti)
+
+Progettare un database **NoSQL (MongoDB)** per una **libreria** con relazioni **molti-a-molti** richiede scelte intelligenti tra **embedding** e **referencing**, bilanciando prestazioni, leggibilità e coerenza.
+### ==riassunto richiesta :==
+
+CREARE DATABASE A SUPPORTO DI APPLICAZIONE BIBLIOTECA
+- setup dell'ambiente
+- documento sulla base dati
+- json di esempio struttura
+- script di caricamento dataset
