@@ -1,0 +1,84 @@
+di seguito troverete un esempio completo di comandi insertOne() e insertMany() per popolare le tre collezioni: autori, libri, e utenti coerentemente con lo  schema MongoDB NoSQL ideato. includendo  dati realistici per dimostrare relazioni molti-a-molti, sia tra autori-libri che utenti-libri.
+
+ 1. Inserimento nella collezione autori
+
+db.autori.insertMany([
+  {
+    _id: ObjectId("666aaa000000000000000001"),
+    nome_autore: "Italo Calvino",
+    data_nascita: "1923-10-15",
+    nazionalità: "Italiana"
+  },
+  {
+    _id: ObjectId("666aaa000000000000000002"),
+    nome_autore: "Umberto Eco",
+    data_nascita: "1932-01-05",
+    nazionalità: "Italiana"
+  }
+])
+ 2. Inserimento nella collezione libri
+```
+db.libri.insertMany([
+  {
+    _id: ObjectId("777def9876543210abcdef12"),
+    id_autore: [
+      ObjectId("666aaa000000000000000001")
+    ],
+    titolo: "Il barone rampante",
+    anno: 1957,
+    genere: "Romanzo",
+    utenti_che_hanno_preso_in_prestito: [
+      {
+        utente_id: ObjectId("666abc1234567890abcdef01"),
+        data_prestito: ISODate("2024-10-15T00:00:00Z"),
+        data_restituzione: ISODate("2024-11-15T00:00:00Z")
+      }
+    ]
+  },
+  {
+    _id: ObjectId("888ghi543210fedcba432109"),
+    id_autore: [
+      ObjectId("666aaa000000000000000002")
+    ],
+    titolo: "Il nome della rosa",
+    anno: 1980,
+    genere: "Giallo storico",
+    utenti_che_hanno_preso_in_prestito: [
+      {
+        utente_id: ObjectId("666abc1234567890abcdef01"),
+        data_prestito: ISODate("2025-01-10T00:00:00Z"),
+        data_restituzione: ISODate("2025-02-10T00:00:00Z")
+      }
+    ]
+  }
+])
+```
+ 3. Inserimento nella collezione utenti
+
+db.utenti.insertOne({
+  _id: ObjectId("666abc1234567890abcdef01"),
+  email: "mario.rossi@example.com",
+  telefono: "+39 3456789012",
+  data_registrazione: ISODate("2024-09-01T10:30:00Z"),
+  libri_prestati: [
+    {
+      libro_id: ObjectId("777def9876543210abcdef12"),
+      data_prestito: ISODate("2024-10-15T00:00:00Z"),
+      data_restituzione: ISODate("2024-11-15T00:00:00Z")
+    },
+    {
+      libro_id: ObjectId("888ghi543210fedcba432109"),
+      data_prestito: ISODate("2025-01-10T00:00:00Z"),
+      data_restituzione: ISODate("2025-02-10T00:00:00Z")
+    }
+  ]
+})
+ Bonus: Aggiunta di indici
+Puoi eseguire questi comandi per migliorare le performance delle query:
+
+
+db.utenti.createIndex({ email: 1 }, { unique: true })
+db.utenti.createIndex({ telefono: 1 }, { unique: true })
+db.utenti.createIndex({ data_registrazione: 1 })
+db.utenti.createIndex({ "libri_prestati.libro_id": 1 })
+db.utenti.createIndex({ "libri_prestati.data_prestito": -1 })
