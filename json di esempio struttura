@@ -1,0 +1,57 @@
+esempio completo in formato JSON della struttura del  database MongoDB per una libreria preso in esame, con le tre collezioni principali: autori, libri, e utenti. riportando in Questo esempio riflette fedelmente quanto descritto nella progettazione, inclusi riferimenti, array, e relazioni molti-a-molti.
+
+Collezione: autori
+
+{
+  "_id": { "$oid": "666aaa000000000000000001" },
+  "nome_autore": "Italo Calvino",
+  "data_nascita": "1923-10-15",
+  "nazionalità": "Italiana"
+}
+ Collezione: libri
+
+{
+  "_id": { "$oid": "777def9876543210abcdef12" },
+  "id_autore": [
+    { "$oid": "666aaa000000000000000001" }
+  ],
+  "titolo": "Il barone rampante",
+  "anno_uscita": 1957,
+  "genere": "Romanzo",
+  "utenti_che_hanno_preso_in_prestito": [
+    {
+      "utente_id": { "$oid": "666abc1234567890abcdef01" },
+      "data_prestito": { "$date": "2024-10-15T00:00:00Z" },
+      "data_restituzione": { "$date": "2024-11-15T00:00:00Z" }
+    }
+  ]
+}
+ 
+Collezione: utenti
+
+{
+  "_id": { "$oid": "666abc1234567890abcdef01" },
+  "email": "mario.rossi@example.com",
+  "telefono": "+39 3456789012",
+  "data_registrazione": { "$date": "2024-09-01T10:30:00Z" },
+  "libri_prestati": [
+    {
+      "libro_id": { "$oid": "777def9876543210abcdef12" },
+      "data_prestito": { "$date": "2024-10-15T00:00:00Z" },
+      "data_restituzione": { "$date": "2024-11-15T00:00:00Z" }
+    },
+    {
+      "libro_id": { "$oid": "888ghi543210fedcba432109" },
+      "data_prestito": { "$date": "2025-01-10T00:00:00Z" },
+      "data_restituzione": { "$date": "2025-02-10T00:00:00Z" }
+    }
+  ]
+}
+
+Nota sulle relazioni
+Ogni libro può avere più autori (id_autore è un array di ObjectId)
+
+Ogni libro tiene traccia dei prestiti effettuati (utenti_che_hanno_preso_in_prestito)
+
+Ogni utente tiene traccia dei libri presi in prestito (libri_prestati)
+
