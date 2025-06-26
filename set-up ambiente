@@ -119,9 +119,9 @@ Modifica
 ]
  7. File database.md
 
-# 📚 Struttura Base Dati Biblioteca (MongoDB)
+#  Struttura Base Dati Biblioteca (MongoDB)
 
-## 🔹 Collezione: autori
+##  Collezione: autori
 
 ```
 {
@@ -130,7 +130,7 @@ Modifica
   "data_nascita": "1923-10-15",
   "nazionalita": "Italiana"
 }
-🔹 Collezione: libri
+ Collezione: libri
 
 {
   "_id": ObjectId,
@@ -146,7 +146,7 @@ Modifica
     }
   ]
 }
-🔹 Collezione: utenti
+ Collezione: utenti
 
 {
   "_id": ObjectId,
@@ -161,7 +161,7 @@ Modifica
     }
   ]
 }
-🔁 Relazioni
+ Relazioni
 Autori <-> Libri (molti a molti)
 
 Utenti <-> Libri (molti a molti)
